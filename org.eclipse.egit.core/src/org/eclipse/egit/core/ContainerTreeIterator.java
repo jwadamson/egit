@@ -238,22 +238,24 @@ public class ContainerTreeIterator extends WorkingTreeIterator {
 			if (containerLocation != null) {
 				File folder = containerLocation.toFile();
 				File[] children = folder.listFiles();
-				for (File child : children) {
-					if (resourceEntries.contains(child))
-						continue; // ok if linked resources are ignored earlier on
-					IPath childLocation = new Path(child.getAbsolutePath());
-					IWorkspaceRoot root = node.getWorkspace().getRoot();
-					IContainer container = root.getContainerForLocation(childLocation);
-					// Check if the container is accessible in the workspace.
-					// This may seem strange, as it was not returned from
-					// members() above, but it's the case for nested projects
-					// that are filtered directly.
-					if (container != null && container.isAccessible())
-						// Resource filters does not cross the non-member line
-						// -> stop inheriting resource filter here (false)
-						entries.add(new ResourceEntry(container, false));
-					else
-						entries.add(new FileEntry(child, FS.DETECTED));
+				if (children!=null) {
+					for (File child : children) {
+						if (resourceEntries.contains(child))
+							continue; // ok if linked resources are ignored earlier on
+						IPath childLocation = new Path(child.getAbsolutePath());
+						IWorkspaceRoot root = node.getWorkspace().getRoot();
+						IContainer container = root.getContainerForLocation(childLocation);
+						// Check if the container is accessible in the workspace.
+						// This may seem strange, as it was not returned from
+						// members() above, but it's the case for nested projects
+						// that are filtered directly.
+						if (container != null && container.isAccessible())
+							// Resource filters does not cross the non-member line
+							// -> stop inheriting resource filter here (false)
+							entries.add(new ResourceEntry(container, false));
+						else
+							entries.add(new FileEntry(child, FS.DETECTED));
+					}
 				}
 			}
 		}
